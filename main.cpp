@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cstring>
+#include <map>
 
 using namespace std;
 
@@ -11,26 +12,71 @@ struct Node{
 
 void push(Node* & stackHead, char data);
 void pop(Node* & stackHead);
-void peek(Node* &stackHead);
+char peek(Node* &stackHead);
 void enqueue(Node* &queueHead, char data, Node* &tail);
 void dequeue(Node* &queueHead);
-void peekq(Node* & queueHead);
+char peekq(Node* & queueHead);
 
 int main()
 {
   Node* stackHead = NULL;
   Node* queueHead = NULL;
+  map<char, int> m;
+  m['+'] = 0;
+  m['-'] = 0;
+  m['/'] = 1;
+  m['*'] = 1;
+  m['^'] = 2;
   Node* tail = queueHead;
-  enqueue(queueHead, '1', tail);
-  enqueue(queueHead, '2', tail);
-  enqueue(queueHead, '3', tail);
-  dequeue(queueHead);
-  peekq(queueHead);
-  push(stackHead, '1');
-  push(stackHead, '2');
-  push(stackHead, '3');
-  pop(stackHead);
-  peek(stackHead);
+  char input[100];
+  cout << "Enter a mathematical expression in infix notation: ";
+  cin.get(input, 100);
+  cin.get();
+  for (int i = 0; i < strlen(input) - 1; i++){
+    if (input[i] != ' '){
+      if (isdigit(input[i])){
+	enqueue(queueHead, input[i], tail);
+	continue;
+      }
+      
+      if (input[i] == '(') {
+	push(stackHead, input[i]);
+      }
+      if (input[i] == ')'){
+	while(peek(stackHead) != '(' && peek(stackHead) != '\0'){
+	  char p = peek(stackHead);
+	  pop(stackHead);
+	  enqueue(stackHead, p, tail);
+	}
+      }
+      if (input[i] == '+' || input[i] == '-' || input[i] == '*' || input[i] == '/' || input[i] == '^'){
+	
+	while (peek(stackHead) != '(' && m[input[i]] >= peek(stackHead) && peek(stackHead) != '\0'){
+	  char p1 = peek(stackHead);
+	  pop(stackHead);
+	  enqueue(queueHead, p1, tail);
+	}
+	
+	push(stackHead, input[i]);
+
+      }
+      //cout << peek(stackHead) << endl;
+      
+    }
+      
+  }
+  
+  while(peek(stackHead) != '\0'){
+    char p = peek(stackHead);
+    pop(stackHead);
+    enqueue(queueHead, p, tail);
+  }
+  while(peekq(queueHead) != '\0'){
+    cout << peekq(queueHead);
+    dequeue(queueHead);
+  }
+  
+  
 }
 
 void push(Node* & stackHead, char data)
@@ -48,9 +94,15 @@ void pop(Node* & stackHead)
   delete temp;
 }
 
-void peek(Node* & stackHead)
+char peek(Node* & stackHead)
 {
-  cout << stackHead->value << endl;
+  if (stackHead != NULL){
+    return stackHead->value;
+  }
+  else{
+    return '\0';
+  }
+  
 }
 
 void enqueue(Node* &queueHead, char data, Node* &tail)
@@ -75,7 +127,12 @@ void dequeue(Node* &queueHead)
   delete temp;
 }
 
-void peekq(Node* &queueHead)
+char peekq(Node* &queueHead)
 {
-  cout << queueHead->value << endl;
+  if (queueHead != NULL){
+    return queueHead->value;
+  }
+  else{
+    return '\0';
+  }
 }
