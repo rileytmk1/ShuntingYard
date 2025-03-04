@@ -32,26 +32,25 @@ int main()
   cout << "Enter a mathematical expression in infix notation: ";
   cin.get(input, 100);
   cin.get();
-  for (int i = 0; i < strlen(input) - 1; i++){
+  for (int i = 0; i < strlen(input); i++){
     if (input[i] != ' '){
       if (isdigit(input[i])){
 	enqueue(queueHead, input[i], tail);
-	continue;
       }
       
-      if (input[i] == '(') {
+      else if (input[i] == '(') {
 	push(stackHead, input[i]);
       }
-      if (input[i] == ')'){
+      else if (input[i] == ')'){
 	while(peek(stackHead) != '(' && peek(stackHead) != '\0'){
 	  char p = peek(stackHead);
 	  pop(stackHead);
-	  enqueue(stackHead, p, tail);
+	  enqueue(queueHead, p, tail);
 	}
+	pop(stackHead);
       }
-      if (input[i] == '+' || input[i] == '-' || input[i] == '*' || input[i] == '/' || input[i] == '^'){
-	
-	while (peek(stackHead) != '(' && m[input[i]] >= peek(stackHead) && peek(stackHead) != '\0'){
+      else if (input[i] == '+' || input[i] == '-' || input[i] == '*' || input[i] == '/' || input[i] == '^'){
+	while (peek(stackHead) != '(' && peek(stackHead) != '\0' && (m[input[i]] < m[peek(stackHead)] || (m[input[i]] == m[peek(stackHead)] && input[i] != '^'))){
 	  char p1 = peek(stackHead);
 	  pop(stackHead);
 	  enqueue(queueHead, p1, tail);
