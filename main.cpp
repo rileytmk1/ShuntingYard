@@ -1,6 +1,8 @@
 #include <iostream>
 #include <cstring>
+#include <vector>
 #include <map>
+//#include "binarytree.h"
 
 using namespace std;
 
@@ -22,6 +24,7 @@ int main()
   Node* stackHead = NULL;
   Node* queueHead = NULL;
   map<char, int> m;
+  // set precedence of operators through map
   m['+'] = 0;
   m['-'] = 0;
   m['/'] = 1;
@@ -36,8 +39,7 @@ int main()
     if (input[i] != ' '){
       if (isdigit(input[i])){
 	enqueue(queueHead, input[i], tail);
-      }
-      
+      }      
       else if (input[i] == '(') {
 	push(stackHead, input[i]);
       }
@@ -64,16 +66,46 @@ int main()
     }
       
   }
-  
+  vector<char> postfix;
   while(peek(stackHead) != '\0'){
     char p = peek(stackHead);
     pop(stackHead);
     enqueue(queueHead, p, tail);
   }
   while(peekq(queueHead) != '\0'){
-    cout << peekq(queueHead);
+    postfix.push_back(peekq(queueHead));
     dequeue(queueHead);
   }
+  cout << "Postfix Expression: ";
+  for (int i = 0; i < postfix.size(); i++){
+    cout << postfix[i];
+  }
+  cout << endl;
+  
+  char input2 [50];
+  cout << "Print infix, postfix, or prefix? ";
+  cin.get(input2, 50);
+  cin.get();
+
+  if (strcmp(input2, "prefix") == 0){
+    cout << "Prefix: ";
+  }
+  else if (strcmp(input2, "postfix") == 0) {
+    cout << "Postfix: ";
+  }
+  else if (strcmp(input2, "infix") == 0){
+    cout << "Infix: ";
+  }
+
+  
+  /*
+  for (int i = 0; i < postfix.size(); i++){
+    binarytree* node, l, r;
+    if (postfix[i] == '+' || postfix[i] == '-' || postfix[i] == '*' || postfix[i] == '/' || postfix[i] == '^'){
+      binarytree
+    }
+  }
+  */
   
   
 }
