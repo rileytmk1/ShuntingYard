@@ -7,10 +7,10 @@
 using namespace std;
 
 
-void push(btNode* & stackHead, char data);
+void push(btNode* & stackHead, btNode* newNode); //char data
 void pop(btNode* & stackHead);
 char peek(btNode* &stackHead);
-void enqueue(btNode* &queueHead, char data, btNode* &tail);
+void enqueue(btNode* &queueHead, btNode* newNode, btNode* &tail); //char data
 void dequeue(btNode* &queueHead);
 char peekq(btNode* & queueHead);
 void prefix(btNode* root);
@@ -35,14 +35,16 @@ int main()
   for (int i = 0; i < strlen(input); i++){
     if (input[i] != ' '){
       if (isdigit(input[i])){
-        enqueue(queueHead, input[i], tail);
+	btNode* newNode = new btNode(input[i]);
+        enqueue(queueHead, newNode, tail);
       }
       else if (input[i] == '(') {
-        push(stackHead, input[i]);
+	btNode* newNode = new btNode(input[i]);
+        push(stackHead, newNode);
       }
       else if (input[i] == ')'){
         while(peek(stackHead) != '(' && peek(stackHead) != '\0'){
-          char p = peek(stackHead);
+          btNode* p = new btNode(peek(stackHead));
           pop(stackHead);
           enqueue(queueHead, p, tail);
         }
@@ -50,12 +52,12 @@ int main()
       }
       else if (input[i] == '+' || input[i] == '-' || input[i] == '*' || input[i] == '/' || input[i] == '^'){
         while (peek(stackHead) != '(' && peek(stackHead) != '\0' && (m[input[i]] < m[peek(stackHead)] || (m[input[i]] == m[peek(stackHead)] && input[i] != '^'))){
-          char p1 = peek(stackHead);
+          btNode* p1 = new btNode(peek(stackHead));
           pop(stackHead);
           enqueue(queueHead, p1, tail);
         }
-
-        push(stackHead, input[i]);
+	btNode* newNode = new btNode(input[i]);
+        push(stackHead, newNode);
 
       }
       //cout << peek(stackHead) << endl;
@@ -65,7 +67,7 @@ int main()
   }
   vector<char> postfix;
   while(peek(stackHead) != '\0'){
-    char p = peek(stackHead);
+    btNode* p = new btNode(peek(stackHead));
     pop(stackHead);
     enqueue(queueHead, p, tail);
   }
@@ -84,23 +86,29 @@ int main()
   btNode* treeStack = NULL;
   for (int i = 0; i < postfix.size(); i++) {
     if (isdigit(postfix[i])){
-      push(treeStack, postfix[i]);
+      btNode* digit = new btNode(postfix[i]);
+      push(treeStack, digit);
+      cout << "test" << endl;
     }
+    
     else{
-      btNode* right = treeStack;
+      btNode* r = treeStack;
       pop(treeStack);
-      btNode* left = treeStack;
+      btNode* l = treeStack;
       pop(treeStack);
 
       btNode* opNode = new btNode(postfix[i]);
-      opNode->left = left;
-      opNode->right = right;
-      push(treeStack, postfix[i]);
+      opNode->left = l;
+    
+      opNode->right = r;
+    
+      push(treeStack, opNode);
     }
+    
   }
+
+  cout << "hi " << treeStack->left->value << endl;
   
-  prefix(treeStack);
- 
   char input2 [50];
   cout << "Print infix, postfix, or prefix? ";
   cin.get(input2, 50);
@@ -108,7 +116,6 @@ int main()
 
   if (strcmp(input2, "prefix") == 0){
     cout << "Prefix: ";
-    prefix(treeStack);
   }
   else if (strcmp(input2, "postfix") == 0) {
     cout << "Postfix: ";
@@ -143,18 +150,11 @@ void prefix(btNode* root)
   prefix(root->right);
 }
 
-void print(btNode* root) {
-    if (root == nullptr) return;
-    cout << "(" << root->value;
-    print(root->left);
-    print(root->right);
-    cout << ")";
-}
 
-void push(btNode* & stackHead, char data)
+void push(btNode* & stackHead, btNode* data)
 {
   btNode* temp = stackHead;
-  stackHead = new btNode(data);
+  stackHead = data;
   stackHead->next = temp;
 }
 
@@ -176,17 +176,16 @@ char peek(btNode* & stackHead)
 
 }
 
-void enqueue(btNode* &queueHead, char data, btNode* &tail)
+void enqueue(btNode* &queueHead, btNode* data, btNode* &tail)
 {
-  btNode* newNode = new btNode(data);
-  
+    
   if (tail == NULL){
-    queueHead = newNode;
-    tail = newNode;
+    queueHead = data;
+    tail = data;
     return;
   }
-  tail->next = newNode;
-  tail = newNode;
+  tail->next = data;
+  tail = data;
 
 }
 
