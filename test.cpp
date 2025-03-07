@@ -14,7 +14,8 @@ void enqueue(btNode* &queueHead, btNode* newNode, btNode* &tail); //char data
 void dequeue(btNode* &queueHead);
 char peekq(btNode* & queueHead);
 void prefix(btNode* root);
-void print(btNode* root);
+void infix(btNode* root);
+void postfix(btNode* root);
 
 int main()
 {
@@ -65,44 +66,56 @@ int main()
     }
 
   }
-  vector<char> postfix;
+  vector<char> postfixExpression;
   while(peek(stackHead) != '\0'){
     btNode* p = new btNode(peek(stackHead));
     pop(stackHead);
     enqueue(queueHead, p, tail);
   }
   while(peekq(queueHead) != '\0'){
-    postfix.push_back(peekq(queueHead));
+    postfixExpression.push_back(peekq(queueHead));
     dequeue(queueHead);
   }
   cout << "Postfix Expression: ";
-  for (int i = 0; i < postfix.size(); i++){
-    cout << postfix[i];
+  for (int i = 0; i < postfixExpression.size(); i++){
+    cout << postfixExpression[i];
   }
   cout << endl;
 
   // need to change push function so it pushes nodes instead of chars
   
   btNode* treeStack = NULL;
-  for (int i = 0; i < postfix.size(); i++) {
-    if (isdigit(postfix[i])){
-      btNode* digit = new btNode(postfix[i]);
+  for (int i = 0; i < postfixExpression.size(); i++) {
+    if (isdigit(postfixExpression[i])){
+      btNode* digit = new btNode(postfixExpression[i]);
       push(treeStack, digit);
-      cout << "test" << endl;
+      cout << "pushed digit: " <<  digit->value <<endl;
     }
     
     else{
+      if (treeStack == NULL){
+	cout << "ERROR!!!" << endl;
+      }
       btNode* r = treeStack;
       pop(treeStack);
+      cout << "popped right: " << r->value << endl;
+
+      if (treeStack == NULL){
+	cout << "ERROR!!" << endl;
+      }
       btNode* l = treeStack;
       pop(treeStack);
 
-      btNode* opNode = new btNode(postfix[i]);
+      cout << "popped left: " << l->value << endl;
+      
+      btNode* opNode = new btNode(postfixExpression[i]);
       opNode->left = l;
-    
+
+          
       opNode->right = r;
     
       push(treeStack, opNode);
+      cout << "pushed operator: " << opNode->value << endl;
     }
     
   }
@@ -116,12 +129,15 @@ int main()
 
   if (strcmp(input2, "prefix") == 0){
     cout << "Prefix: ";
+    prefix(treeStack);
   }
   else if (strcmp(input2, "postfix") == 0) {
     cout << "Postfix: ";
+    postfix(treeStack);
   }
   else if (strcmp(input2, "infix") == 0){
     cout << "Infix: ";
+    infix(treeStack);
   }
   
 
@@ -146,9 +162,32 @@ void prefix(btNode* root)
 
   cout << root->value;
   prefix(root->left);
-  cout << "test" << endl;
   prefix(root->right);
 }
+
+void postfix(btNode* root)
+{
+  if (root == NULL){
+    return;
+  }
+  postfix(root->left);
+  postfix(root->right);
+  cout << root->value;
+}
+
+void infix(btNode* root)
+{
+  if (root == NULL){
+    return;
+  }
+
+  infix(root->left);
+
+  cout << root->value;
+
+  infix(root->right);
+}
+
 
 
 void push(btNode* & stackHead, btNode* data)
@@ -162,7 +201,7 @@ void pop(btNode* & stackHead)
 {
   btNode* temp = stackHead;
   stackHead = stackHead->next;
-  delete temp;
+  //delete temp;
 }
 
 char peek(btNode* & stackHead)
